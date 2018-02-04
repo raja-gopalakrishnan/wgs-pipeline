@@ -8,12 +8,6 @@ SAMPLES=config["samples"]
 level_one=[k for k,v in SAMPLES.items()]
 level_two=[v for k,v in SAMPLES.items()]
 
-#List of all parent strains
-PARENTS=[]
-for i in range(0,len(level_two)):
-    if level_two[i]["parent"]=="parent" :
-        PARENTS.append(level_one[i])
-
 #List of all mutant strains
 MUTANTS=[]
 for i in range(0,len(level_two)):
