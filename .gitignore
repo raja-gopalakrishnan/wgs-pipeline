@@ -1,0 +1,4 @@
+Snakefile
+*.yaml
+genome/
+scripts/
