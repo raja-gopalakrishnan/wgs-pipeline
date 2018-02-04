@@ -36,15 +36,17 @@ rule all:
 		expand("raw_variants/{sample}_raw_variants_all_filtered.vcf", sample = SAMPLES),
 		#merge_vcf
 		expand("mergedVCFs/{mutant}_parent_merged.vcf", mutant=MUTANTS),
-		#get_mutant_snps
-		expand("unique_variants/{mutant}_only_passfilter.vcf", mutant=MUTANTS),
+		#get_mutant_variants
+		expand("unique_variants/{mutant}_only_nofilter.vcf", mutant=MUTANTS),
 		#vcf_to_table
-		#expand("unique_variants/{mutant}_only_passfilter.table", mutant=MUTANTS),
+		#expand("unique_variants/{mutant}_only_nofilter.table", mutant=MUTANTS),
 		#get_genes
 		#expand("unique_variants/{mutant}_only_genes.txt", mutant=MUTANTS),
 		#join_table_genes
-		expand("unique_variants/{mutant}_only_passfilter_annotated.table", mutant=MUTANTS),
-		#select_orfs
+		expand("unique_variants/{mutant}_only_nofilter_annotated.table", mutant=MUTANTS),
+		#select_orfs_nofilter
+		expand("unique_variants/{mutant}_only_nofilter_ORFs.table", mutant=MUTANTS),
+		#select_orfs_passfilter
 		expand("unique_variants/{mutant}_only_passfilter_ORFs.table", mutant=MUTANTS)
 #Make a tab separated file with column 1 containing name of lib and column 2 containing the barcode sequence
 rule make_barcode_file:
@@ -270,37 +272,38 @@ rule merge_vcf:
 	shell:"""
 	(gatk -T CombineVariants -R {params.genome} -V:mutant {input.mutant} -V:parent {input.parent} -o {output}) &> {log}
 	"""
-#Pull out variants that pass filter and are only there in mutant
+#Pull out variants that are only there in mutant
 #This rule uses GATK3.8
-rule get_mutant_snps:
+rule get_mutant_variants:
 	input:
 		"mergedVCFs/{mutant}_parent_merged.vcf"
 	output:
-		"unique_variants/{mutant}_only_passfilter.vcf"
+		"unique_variants/{mutant}_only_nofilter.vcf"
 	params:
-		genome = "genome/" + config["genome"] + ".fa"
-	log: "logs/get_mutant_snps/get_mutant_snps-{mutant}.log"
+		genome = "genome/" + config["genome"] + ".fa",
+		parent = lambda wildcards: config["samples"][wildcards.mutant]["parent"]
+	log: "logs/get_mutant_variants/get_mutant_variants-{mutant}.log"
 	shell:"""
-	(gatk -T SelectVariants -R {params.genome} -V {input} -select 'set=="mutant"' -o {output}) &> {log}
+	(gatk -T SelectVariants -R {params.genome} -V {input} -select 'vc.getGenotype("{params.parent}").getDP() < 0' -o {output}) &> {log}
 	"""
 #Convert VCF file to a table by picking out necessary fields only
 rule vcf_to_table:
 	input:
-		"unique_variants/{mutant}_only_passfilter.vcf"
+		"unique_variants/{mutant}_only_nofilter.vcf"
 	output:
-		temp("unique_variants/{mutant}_only_passfilter.table")
+		temp("unique_variants/{mutant}_only_nofilter.table")
 	params:
 		genome = "genome/" + config["genome"] + ".fa"
 	log: "logs/vcf_to_table/vcf_to_table-{mutant}.log"
 	shell:"""
-	(gatk-launch VariantsToTable -R {params.genome} -V {input} -F CHROM -F POS -F REF -F ALT -F QUAL -GF AD -GF DP -O {output}) &> {log}
+	(gatk-launch VariantsToTable -R {params.genome} -V {input} -F CHROM -F POS -F REF -F ALT -F QUAL -F FILTER -GF AD -GF DP -O {output} -raw) &> {log}
 	"""
 #Convert the vcf file to a bed file and map the snps to genes
 rule get_genes:
 	input:
-		"unique_variants/{mutant}_only_passfilter.vcf"
+		"unique_variants/{mutant}_only_nofilter.vcf"
 	output:
-		temp("unique_variants/{mutant}_only_passfilter_genes.txt")
+		temp("unique_variants/{mutant}_only_nofilter_genes.txt")
 	params:
 		anno = "genome/annotations/" + config["species"] + "_ORFs.bed"
 	log: "logs/set_genes/set_genes-{mutant}.log"
@@ -310,21 +313,31 @@ rule get_genes:
 #Append gene name to table file
 rule join_table_genes:
 	input:
-		genes = "unique_variants/{mutant}_only_passfilter_genes.txt",
-		table = "unique_variants/{mutant}_only_passfilter.table"
+		genes = "unique_variants/{mutant}_only_nofilter_genes.txt",
+		table = "unique_variants/{mutant}_only_nofilter.table"
 	output:
-			"unique_variants/{mutant}_only_passfilter_annotated.table"
+			"unique_variants/{mutant}_only_nofilter_annotated.table"
 	log:"logs/join_table_genes/join_table_genes-{mutant}.log"
 	shell:"""
 	(paste -d '\t' <(cat <(head -1 {input.table}) <(sort -k1,1 -k2,2n <(sed '1d' {input.table}))) <(sed '1i GENE_ID' {input.genes}) > {output}) &> {log}
 	"""
 #Select ORFs only
-rule select_orfs:
+rule select_orfs_nofilter:
 	input:
-		"unique_variants/{mutant}_only_passfilter_annotated.table"
+		"unique_variants/{mutant}_only_nofilter_annotated.table"
+	output:
+		"unique_variants/{mutant}_only_nofilter_ORFs.table"
+	log:"logs/select_orfs_nofilter/select_orfs_nofilter-{mutant}.log"
+	shell:"""
+	(cat <(head -1 {input}) <(sed '1d' {input} | awk '{{OFS=FS="\t"}}{{if($11!="."){{print $0}}}}' | sort -k5,5nr) > {output}) &> {log}
+	"""
+#Select ORFs that were passed by the filter
+rule select_orfs_passfilter:
+	input:
+		"unique_variants/{mutant}_only_nofilter_annotated.table"
 	output:
 		"unique_variants/{mutant}_only_passfilter_ORFs.table"
-	log:"logs/select_orfs/select_orfs-{mutant}.log"
+	log:"logs/select_orfs_passfilter/select_orfs_passfilter-{mutant}.log"
 	shell:"""
-	(cat <(head -1 {input}) <(awk '{{OFS=FS="\t"}}{{if($10!="."){{print $0}}}}' {input} | sed '1d' | sort -k5,5nr) > {output}) &> {log}
+	(cat <(head -1 {input}) <(sed '1d' {input} | awk '{{OFS=FS="\t"}}{{if($11!="." && $6=="PASS"){{print $0}}}}' | sort -k5,5nr) > {output}) &> {log}
 	"""
