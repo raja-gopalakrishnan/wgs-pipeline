@@ -1,0 +1,49 @@
+#List of all samples. When adding more samples, be sure to use the tab-spacing already present in the list
+#In the parent attribute, type in the parent sample name. If the sample is a parent, then type "parent"
+samples:
+  s26plus:
+    barcode: "GTGACTACA"
+    parent: "s26minus"
+  s26minus:
+    barcode: "TGAGAGTG"
+    parent: "parent"
+
+#Species specific parameters
+species: "Scer" #Scer or Spom
+basename: "Sc" #Sc or Sp
+genome: "S_cerevisiae.R64-2-1" #S_cerevisiae.R64-2-1 or S_pombe.ASM294v2
+
+#Name of fastq file
+fastq:
+  "/n/groups/winston/rg161/suppressor_round2/FW_WGS_S1_R1_001.fastq.gz"
+
+demultiplex:
+  #Number of bases in barcode for which a mismatch is permitted
+  mismatch: 1
+
+# Cutadapt quality cutoff parameters
+cutadapt:
+  qual_cutoff: 20
+  min_length: 5
+
+# low quality variant calling parameters
+call_variants:
+  stand-call-conf: 30
+
+#Parameters for hard filtering of SNPs
+#Highly recommended to read this article and understand what they mean: https://software.broadinstitute.org/gatk/documentation/article.php?id=6925
+filter_snps:
+  qd: 2.0 #This is the variant confidence (from the QUAL field) divided by the unfiltered depth of non-hom-ref samples.
+  fs: 60.0 #This is the Phred-scaled probability that there is strand bias at the site.
+  mq: 40.0 #This is the root mean square mapping quality over all the reads at the site.
+  sor: 4.0 #Strands odds ratio - another way to estimate strand bias
+  mqrs: -12.5 #Mapping quality rank sum test
+  rprs: -8.0 #Read position rank sum test
+
+#Parameters for hard filtering of INDELs. See above for description.
+filter_indels:
+  qd: 2.0
+  fs: 200.0
+  rprs: -20.0
+
+threads: 4 
