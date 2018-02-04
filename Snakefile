@@ -306,7 +306,7 @@ rule get_genes:
 		temp("unique_variants/{mutant}_only_nofilter_genes.txt")
 	params:
 		anno = "genome/annotations/" + config["species"] + "_ORFs.bed"
-	log: "logs/set_genes/set_genes-{mutant}.log"
+	log: "logs/get_genes/get_genes-{mutant}.log"
 	shell:"""
 	(intersectBed -a <(vcf2bed <{input}) -b {params.anno} -wao | sort -k1,1 -k2,2n - |awk '{{FS=OFS="\t"}}{{print $16}}' > {output}) &> {log}
 	"""
