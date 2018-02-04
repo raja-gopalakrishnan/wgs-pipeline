@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-##################
+
 configfile: "config.yaml"
 SAMPLES=config["samples"]
 
