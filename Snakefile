@@ -23,7 +23,7 @@ rule all:
 		#demultiplex
 		expand("fastq/{sample}.fastq.gz", sample=SAMPLES),
 		#samtools_sort
-		expand("alignment/{sample}.bam", sample=SAMPLES),
+		expand("alignment/{sample}_aligned.bam", sample=SAMPLES),
 		#bowtie_summary
 		"alignment/bowtie_read_number_summary.txt",
 		#gzip_loose_fastq
@@ -117,7 +117,7 @@ rule samtools_sort:
 	input:
 		"alignment/{sample}.sam"
 	output:
-		"alignment/{sample}.bam"
+		"alignment/{sample}_aligned.bam"
 	log: "logs/samtools_sort/samtools-sort-{sample}.log"
 	threads: config["threads"]
 	shell:"""
@@ -126,7 +126,7 @@ rule samtools_sort:
 #Gather summary statistics for alignment
 rule bowtie_summary:
 	input:
-		expand("alignment/{sample}.bam", sample=SAMPLES)
+		expand("alignment/{sample}_aligned.bam", sample=SAMPLES)
 	output:
 		number = "alignment/bowtie_read_number_summary.txt",
 		percentage = "alignment/bowtie_read_percentage_summary.txt"
@@ -150,7 +150,7 @@ rule gzip_loose_fastq:
 #Add read groups to BAM files
 rule add_read_group:
 	input:
-		"alignment/{sample}.bam"
+		"alignment/{sample}_aligned.bam"
 	output:
 		"alignment/{sample}_cleaned.bam"
 	params:
