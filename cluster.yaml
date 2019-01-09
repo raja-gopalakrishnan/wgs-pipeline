@@ -1,0 +1,8 @@
+__default__:
+    queue : "short"
+    time : 710
+    n : 1
+    mem : 2G
+    name : "{rule}.{wildcards}"
+    log : "logs/cluster/{rule}.{wildcards}.log"
+    err : "logs/cluster/{rule}.{wildcards}.err"
