@@ -1,8 +1,29 @@
 __default__:
     queue : "short"
-    time : 710
+    time : 00:15:00
     n : 1
-    mem : 2G
+    mem : 500M
     name : "{rule}.{wildcards}"
     log : "logs/cluster/{rule}.{wildcards}.log"
     err : "logs/cluster/{rule}.{wildcards}.err"
+
+fastqc_raw:
+    time : 02:00:00
+    
+demultiplex:
+    time : 02:00:00
+
+bowtie:
+    time : 00:30:00
+
+samtools_sort:
+    mem : 1500M
+
+gzip_loose_fastq:
+    time : 00:30:00
+
+call_variants:
+    mem : 2G
+
+selet_snps:
+    mem : 1G
