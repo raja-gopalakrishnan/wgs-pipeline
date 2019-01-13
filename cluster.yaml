@@ -25,5 +25,8 @@ gzip_loose_fastq:
 call_variants:
     mem : 2G
 
-selet_snps:
+select_snps:
+    mem : 1G
+
+select_indels:
     mem : 1G
