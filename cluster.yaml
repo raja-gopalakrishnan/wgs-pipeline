@@ -23,7 +23,7 @@ gzip_loose_fastq:
     time : 00:30:00
 
 call_variants:
-    mem : 2G
+    mem : 8G
 
 select_snps:
     mem : 1G
