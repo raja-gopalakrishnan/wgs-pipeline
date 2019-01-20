@@ -27,7 +27,7 @@ cp template_config.yaml config.yaml
 Open the config.yaml file and edit the following items:
 - ```samples``` : Edit sample names, barcode and parent sample name. If doing bulk segregant analysis, the library made from pooled spores that do not have the mutant phenotype should be treated as the parent.
 - species specific parameters: Specify the ```species```, ```basename``` and ```genome``` - *S. cerevisiae* or *S. pombe*
-- fastq: Provide location of fastq file
+- ```fastq```: Provide location of fastq file
 Change other parameters as required. Feel free to play around with the parameters for hard filtering of SNPs.
 
 ### 3. Create the environment to run the pipeline
