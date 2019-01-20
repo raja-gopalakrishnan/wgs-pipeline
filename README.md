@@ -77,10 +77,11 @@ Contains a list of variants that are found in the coding regions of genes.
 #### 6. ```sample_only_passfilter_ORFs.table```
 Contains a list of variant that are found in the coding regions of genes and passed the hard filtering of GATK.
 
-The pipeline was designed primarily for identifying variants present within coding regions. So, when the pipeline is done, I usually take a look at ```sample_only_passfilter_ORFs.table file```. But also check the ```sample_only_nofilter_ORFs.table``` and ```sample_only_nofilter_annotated.table``` files for variants that did not pass the GATK filtering parameters and for variants that mapped to the intergenic regions respectively.
+The pipeline was designed primarily for identifying variants present within coding regions. So, when the pipeline is done, I usually take a look at ```sample_only_passfilter_ORFs.table```. But also check the ```sample_only_nofilter_ORFs.table``` and ```sample_only_nofilter_annotated.table``` files for variants that did not pass the GATK filtering parameters and for variants that mapped to the intergenic regions respectively.
 
 ## Troubleshooting
 The ```call_variants``` step is the most memory intensive process. For samples that I have used, providing 16 GB of memory has proved to be sufficient. However, depending on the number of reads in the sample, the memory requirement might be higher. You can edit the amount of memory provided for this step in the ```cluster.yaml``` file.
 
 ## Acknowledgements
+- Thank you James Chuang, for providing the *S. cerevisiae* and *S. pombe* annotation files!
 - Thanks to Dan Pagano, whose script helped me understand how to use GATK!
