@@ -16,7 +16,7 @@ This pipeline can be used for identifying SNPs and indels in yeast mutants (*S. 
 
 ### 1. Clone the repository
 ```
-git clone https://github.com/winston-lab/wgs_snp_analysis_2018.git
+git clone https://github.com/raja-gopalakrishnan/wgs-pipeline.git
 ```
 
 ### 2. Edit the config file
