@@ -16,7 +16,7 @@ This pipeline can be used for identifying SNPs and indels in yeast mutants (*S. 
 
 ### 1. Clone the repository
 ```
-git clone https://github.com/winston-lab/wgs_snp_analysis_2018.git
+git clone https://github.com/raja-gopalakrishnan/wgs-pipeline.git
 ```
 
 ### 2. Edit the config file
@@ -27,7 +27,7 @@ cp template_config.yaml config.yaml
 Open the config.yaml file and edit the following items:
 - ```samples``` : Edit sample names, barcode and parent sample name. If doing bulk segregant analysis, the library made from pooled spores that do not have the mutant phenotype should be treated as the parent.
 - species specific parameters: Specify the ```species```, ```basename``` and ```genome``` - *S. cerevisiae* or *S. pombe*
-- fastq: Provide location of fastq file
+- ```fastq```: Provide location of fastq file
 Change other parameters as required. Feel free to play around with the parameters for hard filtering of SNPs.
 
 ### 3. Create the environment to run the pipeline
@@ -77,10 +77,11 @@ Contains a list of variants that are found in the coding regions of genes.
 #### 6. ```sample_only_passfilter_ORFs.table```
 Contains a list of variant that are found in the coding regions of genes and passed the hard filtering of GATK.
 
-The pipeline was designed primarily for identifying variants present within coding regions. So, when the pipeline is done, I usually take a look at ```sample_only_passfilter_ORFs.table file```. But also check the ```sample_only_nofilter_ORFs.table``` and ```sample_only_nofilter_annotated.table``` files for variants that did not pass the GATK filtering parameters and for variants that mapped to the intergenic regions respectively.
+The pipeline was designed primarily for identifying variants present within coding regions. So, when the pipeline is done, I usually take a look at ```sample_only_passfilter_ORFs.table```. But also check the ```sample_only_nofilter_ORFs.table``` and ```sample_only_nofilter_annotated.table``` files for variants that did not pass the GATK filtering parameters and for variants that mapped to the intergenic regions respectively.
 
 ## Troubleshooting
 The ```call_variants``` step is the most memory intensive process. For samples that I have used, providing 16 GB of memory has proved to be sufficient. However, depending on the number of reads in the sample, the memory requirement might be higher. You can edit the amount of memory provided for this step in the ```cluster.yaml``` file.
 
 ## Acknowledgements
+- Thank you James Chuang, for providing the *S. cerevisiae* and *S. pombe* annotation files!
 - Thanks to Dan Pagano, whose script helped me understand how to use GATK!
