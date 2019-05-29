@@ -21,7 +21,7 @@ rule all:
 		#fastqc_raw
 		"qual_ctrl/raw",
 		#demultiplex
-		expand("fastq/{sample}.fastq.gz", sample=SAMPLES),
+		#expand("fastq/{sample}.fastq.gz", sample=SAMPLES),
 		#samtools_sort
 		expand("alignment/{sample}_aligned.bam", sample=SAMPLES),
 		#bowtie_summary
