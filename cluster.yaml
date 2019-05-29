@@ -31,3 +31,12 @@ select_snps:
 
 select_indels:
     mem : 1G
+
+filter_snps:
+    mem : 1G
+
+filter_indels:
+    mem : 1G
+
+vcf_to_table:
+    mem : 1G
